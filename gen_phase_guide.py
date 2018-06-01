@@ -58,20 +58,19 @@ if __name__ == "__main__":
         plt.plot(np.logspace(-8,5), np.power(np.logspace(i-8,i+5), 2./3), 'k:')
     plt.text(2e-4,5e7,r"Adiabat", rotation=42, color='k')
     # Lines of Constant Jeans Mass
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e5/3e4)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e6/3e4)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e7/3e4)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e8/3e4)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    anns = {r"$10^5 M_\odot$":(1.5e3,3e2), 
-            r"$M_J = 10^6 M_\odot$":(3e2,9e2), 
-            r"$M_J = 10^7 M_\odot$":(3e2,4.5e3), 
-            r"$M_J = 10^8 M_\odot$":(3e2,2.2e4)}
+    plt.plot(np.logspace(-6,5), np.power(np.square(1e3/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
+    plt.plot(np.logspace(-6,5), np.power(np.square(1e4/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
+    plt.plot(np.logspace(-6,5), np.power(np.square(1e5/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
+    plt.plot(np.logspace(-6,5), np.power(np.square(1e6/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
+    anns = {r"$10^3 M_\odot$":(1.5e3,3e2), r"$M_J = 10^4 M_\odot$":(3e2,9e2), 
+            r"$M_J = 10^5 M_\odot$":(3e2,4.5e3), r"$M_J = 10^6 M_\odot$":(3e2,2.2e4)}
     annotate_lines(anns, 1./3, 'm')
     # Lines of Constant Jeans Length
     plt.plot(np.logspace(-10,10), np.square(1e1/12.3)*np.logspace(-10,10), '-', color='green')
     plt.plot(np.logspace(-10,10), np.square(1e2/12.3)*np.logspace(-10,10), '-', color='green')
     plt.plot(np.logspace(-10,10), np.square(1e3/12.3)*np.logspace(-10,10), '-', color='green')
     plt.plot(np.logspace(-10,10), np.square(1e4/12.3)*np.logspace(-10,10), '-', color='green')
+
     plt.text(9e-5,5e2,r"$\lambda_{J}=10^4pc$", rotation=48, color='green')
     plt.text(9e-3,5e2,r"$\lambda_{J}=10^3pc$", rotation=48, color='green')
     plt.text(9e-1,5e2,r"$\lambda_{J}=100pc$", rotation=48, color='green')
