@@ -32,6 +32,10 @@ def sound_speed_temp(T):
 def temp_sound_speed(c_s):
     return np.square(1e3*c_s)*(3./5*1.67e-27/1.38e-23)
 
+# Return the densities for an array of free-fall times (in Myr)
+def rho_freefall(t_ff):
+    return np.square(51.5/t_ff)
+
 if __name__ == "__main__":
     font = {'size': 14}
     rc('font', **font)
@@ -119,9 +123,16 @@ if __name__ == "__main__":
     psound.set_ylabel('$c_s (km/s)$')
     temp_dyn_range = temp_range[1] - temp_range[0]
     temp_cs_vals = (np.log10(temp_sound_speed(np.array([3e0,1e1,3e1,1e2,3e2,1e3,3e3])))-temp_range[0])/temp_dyn_range
-    print(temp_cs_vals)
     psound.set_yticks(temp_cs_vals)
     psound.set_yticklabels(['3','10', '30', '100', '300', '1,000', '3,000'])
+
+    # Show sound speed as second y axis
+    pfall = plt.twiny()
+    pfall.set_xlabel('$t_{ff} (Myr)$')
+    rho_dyn_range = rho_range[1] - rho_range[0]
+    rho_ff_vals = (np.log10(rho_freefall(np.array([1e0, 1e1, 1e2, 1e3, 1e4, 1e5])))-rho_range[0])/rho_dyn_range
+    pfall.set_xticks(rho_ff_vals)
+    pfall.set_xticklabels([r'$1$', r'$10$', r'$100$', r'$10^3$', r'$10^4$', r'$10^5$'])
     plt.figtext(0.71,0.04,"BW Keller's Reference Phase Diagram", fontsize=8)
     plt.figtext(0.825,0.02,"project2501.ca", fontsize=8)
     plt.savefig('phase_guide.pdf', orientation='landscape',bbox_inches='tight')
