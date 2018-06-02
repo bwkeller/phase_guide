@@ -24,13 +24,23 @@ def temp_jeans_length(rho, length):
 def temp_adiabat(rho, K):
     return K/(8.617e-8*np.power(rho, -2./3))
 
+# Return the sound speed in km/s for an array of temperatures
+def sound_speed_temp(T):
+    return np.sqrt(5./3*1.38e-23*T/1.67e-27)/1e3
+
+# Return the temperature for an array of sound speeds (in km/s)
+def temp_sound_speed(c_s):
+    return np.square(1e3*c_s)*(3./5*1.67e-27/1.38e-23)
+
 if __name__ == "__main__":
     font = {'size': 14}
     rc('font', **font)
     rc('axes', grid=False)
     rc('axes', facecolor='white')
     rc('figure', figsize=(11,8.5))
-    rho = np.logspace(-7,5) # we will use this to calculate isocontours
+    rho_range = (-7,4)
+    temp_range = (2,9)
+    rho = np.logspace(*rho_range) # we will use this to calculate isocontours
 
     # Plot lines of constant cooling time
     coolrates = np.genfromtxt('coolrates.dat', skip_header=2, names=True)
@@ -46,8 +56,8 @@ if __name__ == "__main__":
     #Set up axes properties
     plt.xscale('log')
     plt.yscale('log')
-    plt.xlim(1e-7,1e4)
-    plt.ylim(1e2,1e9)
+    plt.xlim(np.power(10., rho_range))
+    plt.ylim(np.power(10., temp_range))
     plt.ylabel('T $(K)$')
     plt.xlabel(r'$\rho (m_p /cm^3)$')
 
@@ -107,8 +117,11 @@ if __name__ == "__main__":
     # Show sound speed as second y axis
     psound = plt.twinx()
     psound.set_ylabel('$c_s (km/s)$')
-    psound.set_yticks([0.078, 0.194, 0.300, 0.416, 0.522, 0.638, 0.744, 0.861])
-    psound.set_yticklabels(['3','10', '30', '100', '300', '1,000', '3,000', '10,000'])
+    temp_dyn_range = temp_range[1] - temp_range[0]
+    temp_cs_vals = (np.log10(temp_sound_speed(np.array([3e0,1e1,3e1,1e2,3e2,1e3,3e3])))-temp_range[0])/temp_dyn_range
+    print(temp_cs_vals)
+    psound.set_yticks(temp_cs_vals)
+    psound.set_yticklabels(['3','10', '30', '100', '300', '1,000', '3,000'])
     plt.figtext(0.71,0.04,"BW Keller's Reference Phase Diagram", fontsize=8)
     plt.figtext(0.825,0.02,"project2501.ca", fontsize=8)
     plt.savefig('phase_guide.pdf', orientation='landscape',bbox_inches='tight')
