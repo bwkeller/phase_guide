@@ -12,6 +12,14 @@ def annotate_lines(loc_labels, slope, color):
                 np.array((10,10)).reshape((1,2)))[0]
         plt.text(loc[0], loc[1], label, rotation=trans_angle, color=color, rotation_mode='anchor')
 
+# Return the temperatures for an array of densities (in H/cc) at constant Jeans mass (in Msol)
+def temp_jeans_mass(rho, mass):
+    return np.power(np.square(mass/22.1)*rho, 1./3)
+
+# Return the temperatures for an array of densities (in H/cc) at constant Jeans length (in pc)
+def temp_jeans_length(rho, length):
+    return np.square(length/9.628)*rho
+
 if __name__ == "__main__":
     font = {'size': 14}
     rc('font', **font)
@@ -57,24 +65,30 @@ if __name__ == "__main__":
     for i in range(3,19,3):
         plt.plot(np.logspace(-8,5), np.power(np.logspace(i-8,i+5), 2./3), 'k:')
     plt.text(2e-4,5e7,r"Adiabat", rotation=42, color='k')
-    # Lines of Constant Jeans Mass
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e3/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e4/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e5/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    plt.plot(np.logspace(-6,5), np.power(np.square(1e6/3.16e2)*np.logspace(-3,8), 1./3), 'm', linestyle='-')
-    anns = {r"$10^3 M_\odot$":(1.5e3,3e2), r"$M_J = 10^4 M_\odot$":(3e2,9e2), 
-            r"$M_J = 10^5 M_\odot$":(3e2,4.5e3), r"$M_J = 10^6 M_\odot$":(3e2,2.2e4)}
-    annotate_lines(anns, 1./3, 'm')
-    # Lines of Constant Jeans Length
-    plt.plot(np.logspace(-10,10), np.square(1e1/12.3)*np.logspace(-10,10), '-', color='green')
-    plt.plot(np.logspace(-10,10), np.square(1e2/12.3)*np.logspace(-10,10), '-', color='green')
-    plt.plot(np.logspace(-10,10), np.square(1e3/12.3)*np.logspace(-10,10), '-', color='green')
-    plt.plot(np.logspace(-10,10), np.square(1e4/12.3)*np.logspace(-10,10), '-', color='green')
 
-    plt.text(9e-5,5e2,r"$\lambda_{J}=10^4pc$", rotation=48, color='green')
-    plt.text(9e-3,5e2,r"$\lambda_{J}=10^3pc$", rotation=48, color='green')
-    plt.text(9e-1,5e2,r"$\lambda_{J}=100pc$", rotation=48, color='green')
-    plt.text(1e2,5e2,r"$\lambda_{J}=10pc$", rotation=48, color='green')
+    # Lines of Constant Jeans Mass
+    rho = np.logspace(-7,5) 
+    plt.plot(rho, temp_jeans_mass(rho, 1e3), color='m', linestyle='-')
+    plt.plot(rho, temp_jeans_mass(rho, 1e4), color='m', linestyle='-')
+    plt.plot(rho, temp_jeans_mass(rho, 1e5), color='m', linestyle='-')
+    plt.plot(rho, temp_jeans_mass(rho, 1e6), color='m', linestyle='-')
+    anns = {r"$10^3 M_\odot$":(1.5e3,1.8e2), 
+            r"$10^4 M_\odot$":(1.5e3,8e2), 
+            r"$M_J = 10^5 M_\odot$":(3e2,2.5e3), 
+            r"$M_J = 10^6 M_\odot$":(3e2,1.2e4)}
+    annotate_lines(anns, 1./3, 'm')
+
+    # Lines of Constant Jeans Length
+    plt.plot(rho, temp_jeans_length(rho, 1e1), color='green', linestyle='-')
+    plt.plot(rho, temp_jeans_length(rho, 1e2), color='green', linestyle='-')
+    plt.plot(rho, temp_jeans_length(rho, 1e3), color='green', linestyle='-')
+    plt.plot(rho, temp_jeans_length(rho, 1e4), color='green', linestyle='-')
+    anns = {r"$\lambda_J = 10 pc$":(7e1,1e2),
+            r"$\lambda_J = 100 pc$":(7e-1,1e2),
+            r"$\lambda_J = 10^3 pc$":(7e-3,1e2),
+            r"$\lambda_J = 10^4 pc$":(7e-5,1e2)}
+    annotate_lines(anns, 1, 'g')
+
     # Show sound speed as second y axis
     psound = plt.twinx()
     psound.set_ylabel('$c_s (km/s)$')
