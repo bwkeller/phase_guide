@@ -20,13 +20,18 @@ def temp_jeans_mass(rho, mass):
 def temp_jeans_length(rho, length):
     return np.square(length/9.628)*rho
 
-# Return the temperatures for an array of densities (in H/cc) ata a constant entropy (in keV cm^2)
+# Return the temperatures for an array of densities (in H/cc) at a constant entropy (in keV cm^2)
 def temp_adiabat(rho, K):
     return K/(8.617e-8*np.power(rho, -2./3))
 
-# Return the sound speed in km/s for an array of temperatures
-def sound_speed_temp(T):
-    return np.sqrt(5./3*1.38e-23*T/1.67e-27)/1e3
+# Return the temperatures for an array of densities at a constant pressure (in K/cc/kB)
+def temp_pressure(rho, P):
+    return P/rho
+
+# Return the temperature for an array of densities given a constant courant time (in years) NOTE: 
+# There is a missing prefactor here that is code dependent, n^-1/3 is NOT exactly delta-x
+def temp_courant_time(rho, tc):
+    return np.power(rho, -2./3)*1.67e-27/1.38e-23*3./5./np.square(tc/3.154e7)
 
 # Return the temperature for an array of sound speeds (in km/s)
 def temp_sound_speed(c_s):
@@ -35,6 +40,7 @@ def temp_sound_speed(c_s):
 # Return the densities for an array of free-fall times (in Myr)
 def rho_freefall(t_ff):
     return np.square(51.5/t_ff)
+
 
 if __name__ == "__main__":
     font = {'size': 14}
@@ -71,32 +77,45 @@ if __name__ == "__main__":
             mincnt=2, gridsize=200, cmap='binary')
 
     # Add interesting density values
-    plt.axvline(1,color='r',linestyle=':')
-    plt.text(1.2,5e8,'Mean MW ISM', color='r', rotation='270')
-    plt.axvline(5e-6,color='r',linestyle=':')
-    plt.text(6e-6,5e8,r'$\rho_{crit}\; (\Omega = 1)$', color='r', rotation='270')
-    plt.axvline(0.308*5e-6,color='r',linestyle=':')
-    plt.text(0.308*6e-6,5e8,r'$\Omega_m = 0.308$', color='r', rotation='270')
-    plt.axvline(0.045*5e-6,color='r',linestyle=':')
-    plt.text(0.045*6e-6,5e8,r'$\Omega_B = 0.045$', color='r', rotation='270')
+    plt.axvline(1,color='Salmon',linestyle=':')
+    plt.text(1.2,5e8,'Mean MW ISM', color='Salmon', rotation='270')
+    plt.axvline(5e-6,color='Salmon',linestyle=':')
+    plt.text(6e-6,9e6,r'$\rho_{crit}\; (\Omega = 1)$', color='Salmon', rotation='270')
+    plt.axvline(0.308*5e-6,color='Salmon',linestyle=':')
+    plt.text(0.308*6e-6,9e6,r'$\Omega_m = 0.308$', color='Salmon', rotation='270')
+    plt.axvline(0.045*5e-6,color='Salmon',linestyle=':')
+    plt.text(0.045*6e-6,9e6,r'$\Omega_B = 0.045$', color='Salmon', rotation='270')
 
-    #for i in range(-9,8,3):
-        #plt.plot(np.power(10.,np.arange(-10,10)), np.power(10.,i+np.arange(15,-5,-1)), '--', color='grey')
-    #plt.text(2e-5,5e3,r"Isobar", rotation=-47, color='grey')
-    #for i in range(-16,4,3):
-        #plt.plot(np.logspace(-8,5), np.power(np.logspace(i-8,i+5), -0.66), linestyle='dashdot', color='cyan')
-    #plt.text(2e-6,3e6,r"$t_{Courant}=$ const", rotation=-36, color='cyan')
+    # Annotate lines of constant courant time
+    plt.plot(rho, temp_courant_time(rho, 1e2), color='cyan', linestyle='-.')
+    plt.plot(rho, temp_courant_time(rho, 1e3), color='cyan', linestyle='-.')
+    plt.plot(rho, temp_courant_time(rho, 1e4), color='cyan', linestyle='-.')
+    annotate_lines({r"$t_{courant} = const$":(3e1,1e6)}, -2./3, 'cyan')
+
+    # Lines of constant pressure
+    plt.plot(rho, temp_pressure(rho, 1e2), color='grey', linestyle='--')
+    plt.plot(rho, temp_pressure(rho, 1e3), color='grey', linestyle='--')
+    plt.plot(rho, temp_pressure(rho, 1e4), color='grey', linestyle='--')
+    plt.plot(rho, temp_pressure(rho, 1e5), color='grey', linestyle='--')
+    anns = {"(isobar)":(1.1e-7,4e8),
+            r"$P/k = 100\; K\; cm^{-3}$":(1.5e-7,8e8),
+            r"$P/k = 10^3\; K\; cm^{-3}$":(1.5e-6,8e8),
+            r"$P/k = 10^4\; K\; cm^{-3}$":(1.5e-5,8e8),
+            r"$P/k = 10^5\; K\; cm^{-3}$":(1.5e-4,8e8)}
+    annotate_lines(anns, -1, 'grey')
+
+    # Lines of constant entropy
     plt.plot(rho, temp_adiabat(rho, 0.1), color='k', linestyle=':')
     plt.plot(rho, temp_adiabat(rho, 1), color='k', linestyle=':')
     plt.plot(rho, temp_adiabat(rho, 10), color='k', linestyle=':')
     plt.plot(rho, temp_adiabat(rho, 100), color='k', linestyle=':')
-    anns = {r"$K = 100\; eV\; cm^2$":(6e-7, 1e2),
+    anns = {r"$K = 100\; eV\; cm^2$ (adiabat)":(6e-7, 1e2),
             r"$K = 1\; keV\; cm^2$":(2e-7, 5e2),
             r"$K = 10\; keV\; cm^2$":(2e-7, 5e3),
-            r"$K = 100\; keV\; cm^2$ (adiabat)":(2e-7, 5e4)}
+            r"$K = 100\; keV\; cm^2$":(2e-7, 5e4)}
     annotate_lines(anns, 2./3, 'k')
 
-    # Lines of Constant Jeans Mass
+    # Lines of constant Jeans Mass
     plt.plot(rho, temp_jeans_mass(rho, 1e3), color='m', linestyle='-')
     plt.plot(rho, temp_jeans_mass(rho, 1e4), color='m', linestyle='-')
     plt.plot(rho, temp_jeans_mass(rho, 1e5), color='m', linestyle='-')
@@ -107,7 +126,7 @@ if __name__ == "__main__":
             r"$M_J = 10^6 M_\odot$":(3e2,1.2e4)}
     annotate_lines(anns, 1./3, 'm')
 
-    # Lines of Constant Jeans Length
+    # Lines of constant Jeans Length
     plt.plot(rho, temp_jeans_length(rho, 1e1), color='green', linestyle='-')
     plt.plot(rho, temp_jeans_length(rho, 1e2), color='green', linestyle='-')
     plt.plot(rho, temp_jeans_length(rho, 1e3), color='green', linestyle='-')
@@ -126,7 +145,7 @@ if __name__ == "__main__":
     psound.set_yticks(temp_cs_vals)
     psound.set_yticklabels(['3','10', '30', '100', '300', '1,000', '3,000'])
 
-    # Show sound speed as second y axis
+    # Show free-fall time as second x axis
     pfall = plt.twiny()
     pfall.set_xlabel('$t_{ff} (Myr)$')
     rho_dyn_range = rho_range[1] - rho_range[0]
