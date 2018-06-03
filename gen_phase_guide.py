@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from sys import argv
 import numpy as np
 import pynbody as pyn
 from scipy import ndimage
@@ -154,4 +155,7 @@ if __name__ == "__main__":
     pfall.set_xticklabels([r'$1$', r'$10$', r'$100$', r'$10^3$', r'$10^4$', r'$10^5$'])
     plt.figtext(0.71,0.04,"BW Keller's Reference Phase Diagram", fontsize=8)
     plt.figtext(0.825,0.02,"project2501.ca", fontsize=8)
-    plt.savefig('phase_guide.pdf', orientation='landscape',bbox_inches='tight')
+    if argv[1] == 'eps':
+        plt.savefig('phase_guide.eps', bbox_inches='tight')
+    else:
+        plt.savefig('phase_guide.'+argv[1], orientation='landscape',bbox_inches='tight')
